@@ -10,21 +10,24 @@ public class player_control : MonoBehaviour
     public float velocity;
     public float jumpHeight; 
     public Transform ground_check;
-    // Start is called before the first frame update
-    void Start()
-    {
+    
+    void Start() {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        Flip();
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            rb.AddForce(transform.up *jumpHeight, ForceMode2D.Impulse);
+    void Update() {
+        if (Input.GetAxis("Horizontal") == 0 && isGrounded) {
+            animator.SetInteger("state", 3);
         }
-        GroundCheck();
+        else {
+            Flip();
+            if (isGrounded)
+            {
+                animator.SetInteger("state", 2);
+            }
+        }
     }
 
     void Flip()
@@ -49,5 +52,9 @@ public class player_control : MonoBehaviour
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(ground_check.position, 0.2f);
         isGrounded = colliders.Length > 1;
+        if (!isGrounded)
+        {
+            animator.SetInteger("state", 3);
+        }
     }
 }
