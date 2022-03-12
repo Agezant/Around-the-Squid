@@ -28,6 +28,8 @@ public class player_control : MonoBehaviour
                 animator.SetInteger("state", 2);
             }
         }
+    }
+
     void Flip()
     {
         if(Input.GetAxis("Horizontal") > 0)
@@ -54,6 +56,5 @@ public class player_control : MonoBehaviour
         {
             animator.SetInteger("state", 3);
         }
-    }
     }
 }
