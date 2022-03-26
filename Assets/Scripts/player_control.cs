@@ -10,10 +10,14 @@ public class player_control : MonoBehaviour
     public float velocity;
     public float jumpHeight; 
     public Transform ground_check;
+    public int HealthPoints = -111111111;
+    int CurrentHealthPoints;
+
     
     void Start() {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        CurrentHealthPoints = HealthPoints;
     }
 
     // Update is called once per frame
@@ -27,6 +31,10 @@ public class player_control : MonoBehaviour
             {
                 animator.SetInteger("state", 2);
             }
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded) {
+                rb.AddForce(transform.up * jumpHeight, ForceMode2D.Impulse);
+            }
+            GroundCheck();
         }
     }
 
@@ -56,5 +64,25 @@ public class player_control : MonoBehaviour
         {
             animator.SetInteger("state", 3);
         }
+    }
+
+    public void RecountHealthPonts(int deltaHealthPoints)
+    {
+        CurrentHealthPoints += deltaHealthPoints;
+        if (deltaHealthPoints < 0)
+        {
+            StartCoroutine(OnHit());
+        }
+        print(CurrentHealthPoints);
+        if (CurrentHealthPoints <= 0){
+            GetComponent<CapsuleCollider2D>().enabled = false;
+        }
+    }
+
+    IEnumerator OnHit()
+    {
+        SpriteRenderer sr =  GetComponent<SpriteRenderer>();
+        sr.color = new Color(1f, sr.color.g - 0.02f, sr.color.b - 0.02f);
+        yield return new WaitForSeconds(0.02f);
     }
 }
