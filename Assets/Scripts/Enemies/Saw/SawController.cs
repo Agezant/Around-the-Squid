@@ -21,7 +21,7 @@ public class SawController : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             player_control player = collision.gameObject.GetComponent<player_control>();
-            player.RecountHealthPonts(+111111111);
+            player.RecountHealthPoint(-1);
             Rigidbody2D rb = collision.gameObject.GetComponent<Rigidbody2D>();
             rb.AddForce(transform.up * 5f, ForceMode2D.Impulse);
         }
