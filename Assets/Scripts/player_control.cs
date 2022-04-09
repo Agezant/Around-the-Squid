@@ -10,10 +10,20 @@ public class player_control : MonoBehaviour
     public float velocity;
     public float jumpHeight; 
     public Transform ground_check;
+    public int HealthPoints = 60;
+    int CurrentHealthPoints;
+    bool isHit = false;
+    public Main main;
+
+    void Lose()
+    {
+        main.GetComponent<Main>().Lose();
+    }
     
     void Start() {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        CurrentHealthPoints = HealthPoints;
     }
 
     // Update is called once per frame
@@ -27,6 +37,10 @@ public class player_control : MonoBehaviour
             {
                 animator.SetInteger("state", 2);
             }
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded) {
+                rb.AddForce(transform.up * jumpHeight, ForceMode2D.Impulse);
+            }
+            GroundCheck();
         }
     }
 
@@ -56,5 +70,47 @@ public class player_control : MonoBehaviour
         {
             animator.SetInteger("state", 3);
         }
+    }
+
+    public void RecountHealthPoint(int deltaHealthPoints)
+    {
+        CurrentHealthPoints += deltaHealthPoints;
+        if (deltaHealthPoints < 0)
+        {
+            StopCoroutine(OnHit());
+            isHit = true;
+            StartCoroutine(OnHit());
+        }
+        print(CurrentHealthPoints);
+        if (CurrentHealthPoints <= 0)
+        {
+            GetComponent<CapsuleCollider2D>().enabled = false;
+            Invoke("Lose", 2f);
+        }
+    }
+
+    IEnumerator OnHit()
+    {
+        SpriteRenderer sr =  GetComponent<SpriteRenderer>();
+        if (isHit)
+        {
+        sr.color = new Color(1f, sr.color.g - 0.02f, sr.color.b - 0.02f);
+        }
+        else
+        {
+        sr.color = new Color(1f, sr.color.g + 0.02f, sr.color.b + 0.02f);
+        }
+
+        if (sr.color.g == 1f)
+        {
+            StopCoroutine(OnHit());
+        }
+        if (sr.color.g <= 0)
+        {
+            isHit = false;
+        }
+        yield return new WaitForSeconds(0.02f);
+        StartCoroutine(OnHit());
+
     }
 }
